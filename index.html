@@ -33,7 +33,7 @@
         }
         .image-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(2, 1fr); /* 每行显示2个图片 */
             gap: 20px;
             margin-top: 20px;
         }
@@ -58,6 +58,13 @@
             font-size: 14px;
             color: #888;
         }
+        .image-wrapper.last-image img {
+            max-width: 150%; /* 放大最后一张图片 */
+            transition: transform 0.3s ease;
+        }
+        .image-wrapper.last-image:hover img {
+            transform: scale(1.05); /* 鼠标悬停时进一步放大 */
+        }
         footer {
             text-align: center;
             margin: 40px 0;
@@ -70,6 +77,9 @@
             }
             section {
                 padding: 15px;
+            }
+            .image-container {
+                grid-template-columns: 1fr; /* 小屏幕下图片显示为1列 */
             }
         }
     </style>
@@ -106,7 +116,7 @@
 
         <h3>2.4 White Balance</h3>
         <p>White balance is a technique for correcting image color deviations. By adjusting the average value of each color channel, the overall tone of the image is more natural and balanced. The white balance function calculates the average value and average grayscale value of the three channels of red, green, and blue in the image. By adjusting the pixel value of each color channel, the average value of each channel is close to avg_gray. Specifically, the pixel value of each channel is multiplied by a scaling factor, which is the ratio of avg_gray to the average value of the channel. The pixel value of each channel is clipped to ensure that it is in the range of 0 to 1. However, the actual effect makes the entire tone very dim, which does not conform to the aesthetics of the image, so the code is finally implemented but the final display part is not used.</p>
-        <img src="NCC version 2/aligned_emir.jpg" alt="Berfore White Balancing Image 2.4.1" />
+        <img src="NCC version 2/aligned_emir.jpg" alt="Before White Balancing Image 2.4.1" />
         <img src="improved output 1/aligned_emir.jpg" alt="After White Balancing Image 2.4.2" />
         
 
@@ -169,7 +179,8 @@
                 <img src="improved output/aligned_train.jpg" alt="Green channel shift: (-17, 25) <br> Red channel shift: (20, 44)" />
                 <p>Green channel shift: (-17, 25) <br> Red channel shift: (20, 44)</p>
             </div>
-            <div class="image-wrapper">
+            <!-- 放大的最后一张图片 -->
+            <div class="image-wrapper last-image">
                 <img src="improved output/aligned_tobolsk.jpg" alt="Green channel shift: (-3, 0) <br> Red channel shift: (0, -1)" />
                 <p>Green channel shift: (-3, 0) <br> Red channel shift: (0, -1)</p>
             </div>
@@ -182,3 +193,4 @@
 
 </body>
 </html>
+
