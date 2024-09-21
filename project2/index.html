@@ -64,6 +64,22 @@
             font-size: 14px;
             color: #aaa;
         }
+        /* Styles for single-row containers */
+        .image-container.single-row-container {
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .image-container.single-row-container .image-wrapper {
+            padding: 0;
+            background-color: transparent;
+            transition: none;
+        }
+        .image-container.single-row-container .image-wrapper img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0;
+        }
         @media (max-width: 768px) {
             h1, h2, h3 {
                 font-size: 1.5rem;
@@ -72,6 +88,9 @@
                 padding: 15px;
             }
             .image-container {
+                grid-template-columns: 1fr;
+            }
+            .image-container.single-row-container {
                 grid-template-columns: 1fr;
             }
         }
@@ -139,8 +158,7 @@
         <p>Working with color images introduced the need to handle multiple channels—red, green, and blue—individually. Each color channel carries distinct information, so applying blur and sharpening separately to each channel ensures that the color integrity is maintained and that the sharpening effect is evenly distributed across the entire image. This approach prevents color distortions and ensures that the enhanced details are consistent across all colors.</p>
         <p>Adjusting parameters such as the size of the Gaussian kernel, the standard deviation (sigma), and the sharpening intensity (alpha) was essential for optimizing the effects. Larger kernels and higher sigma values result in more pronounced blurring, while higher alpha values lead to stronger sharpening. Through iterative testing and fine-tuning, I was able to control the degree of blur and sharpen the images effectively, achieving the desired visual outcomes for different types of images and applications.</p>
         <p>Here are several results:</p>
-        
-        <!-- 初始输出图像 -->
+
         <div class="image-container">
             <div class="image-wrapper">
                 <img src="picture/2.1/output6.png" alt="Sharpened Image Result" />
@@ -216,21 +234,20 @@
         <h2>Part 2.2: Hybrid Images</h2>
         <p>When I worked on this image processing project, I utilized several key technologies to achieve image alignment, filtering, and frequency analysis. I started by loading two images and aligning them using OpenCV to ensure they matched correctly. To separate the images into their frequency components, I created low-pass and high-pass filters with Gaussian kernels using NumPy. Applying these filters through convolution allowed me to extract smooth backgrounds from one image and detailed textures from the other. To handle the multiple color channels efficiently, I employed multithreading, which sped up the processing significantly.</p>
         <p>Next, I performed Fourier transforms to analyze the frequency spectra of the original and filtered images, providing a deeper understanding of how the filters affected the images. By combining the high-frequency details of one image with the low-frequency background of the other, I created a hybrid image that showcased both sharp details and smooth areas. Finally, I visualized the results using Matplotlib, which helped in comparing the original, filtered, and hybrid images clearly. This approach not only enhanced the images effectively but also optimized the processing workflow, demonstrating the powerful combination of these technologies in image manipulation.</p>
-        <div class="image-container">
-        <div class="image-wrapper">
-            <img src="picture/2.2/Figure_1.png" alt="Hybrid Image Result" />
-        </div>
-        <div class="image-wrapper">
-            <img src="picture/2.2/Figure_2.png" alt="Hybrid Image Result" />
-        </div>
-        <div class="image-wrapper">
-            <img src="picture/2.2/Figure_3.png" alt="Hybrid Image Result" />
-        </div>
-        <div class="image-wrapper">
-            <img src="picture/2.2/Figure_5.png" alt="Hybrid Image Result" />
-        </div>
-    
-        <div class="image-row">
+        Share
+            <div class="image-container single-row-container">
+            <div class="image-wrapper">
+                <img src="picture/2.2/Figure_1.png" alt="Hybrid Image Result" />
+            </div>
+            <div class="image-wrapper">
+                <img src="picture/2.2/Figure_2.png" alt="Hybrid Image Result" />
+            </div>
+            <div class="image-wrapper">
+                <img src="picture/2.2/Figure_3.png" alt="Hybrid Image Result" />
+            </div>
+            <div class="image-wrapper">
+                <img src="picture/2.2/Figure_5.png" alt="Hybrid Image Result" />
+            </div>
             <div class="image-wrapper">
                 <img src="picture/2.2/Figure_11.png" alt="Hybrid Image Result" />
             </div>
@@ -244,10 +261,9 @@
                 <img src="picture/2.2/Figure_14.png" alt="Hybrid Image Result" />
             </div>
         </div>
-    </div>
 
         <p>This is the false application of a hybrid photo, it looks really weird.</p>
-        <div class="image-container">
+        <div class="image-container single-row-container">
             <div class="image-wrapper">
                 <img src="picture/2.2/Figure_6.png" alt="Hybrid Image Result" />
             </div>
@@ -302,7 +318,7 @@
         <p>This process involved creating Gaussian and Laplacian pyramids for both images and the mask. By blending at each level of the Laplacian pyramids, the method effectively combines the low-frequency components (like the general color and lighting) and high-frequency components (like edges and textures) of both images. The mask's Gaussian pyramid ensures that the blending occurs smoothly across scales, preventing any harsh edges or noticeable seams in the final image.</p>
         <p>One of the significant advantages of using Laplacian pyramid blending is its ability to handle images with different exposures or lighting conditions. Traditional blending methods might result in visible seams or ghosting effects, but the multi-resolution approach mitigates these issues by appropriately combining image details at various levels.</p>
         <p>This technique is highly versatile and can be applied to a wide range of image blending tasks, such as creating artistic effects, panoramas, or even blending different textures in graphic design. The key is in constructing appropriate masks and pyramids to control how and where the images blend, allowing for creative and seamless composites.</p>
-        <div class="image-container">
+        <div class="image-container single-row-container">
             <div class="image-wrapper">
                 <img src="picture/2.4/apple.jpeg" alt="Apple Image" />
             </div>
@@ -318,7 +334,7 @@
             <div class="image-wrapper">
                 <img src="picture/2.4/Figure_25.png" alt="Blended Image Result" />
             </div>
-            <div class="image-wrapper new-line">
+            <div class="image-wrapper">
                 <img src="picture/2.4/Figure_26.png" alt="Blended Image Result" />
             </div>
             <div class="image-wrapper">
@@ -333,7 +349,7 @@
             <div class="image-wrapper">
                 <img src="picture/2.4/Figure_31.png" alt="Blended Image Result" />
             </div>
-            <div class="image-wrapper new-line">
+            <div class="image-wrapper">
                 <img src="picture/2.4/Figure_32.png" alt="Blended Image Result" />
             </div>
             <div class="image-wrapper">
@@ -347,6 +363,24 @@
             </div>
             <div class="image-wrapper">
                 <img src="picture/2.4/Figure_36.png" alt="Blended Image Result" />
+            </div>
+        </div>
+        <p>This is the false application of a hybrid photo, it looks really weird.</p>
+        <div class="image-container single-row-container">
+            <div class="image-wrapper">
+                <img src="picture/2.2/Figure_6.png" alt="Hybrid Image Result" />
+            </div>
+            <div class="image-wrapper">
+                <img src="picture/2.2/Figure_7.png" alt="Hybrid Image Result" />
+            </div>
+            <div class="image-wrapper">
+                <img src="picture/2.2/Figure_8.png" alt="Hybrid Image Result" />
+            </div>
+            <div class="image-wrapper">
+                <img src="picture/2.2/Figure_9.png" alt="Hybrid Image Result" />
+            </div>
+            <div class="image-wrapper">
+                <img src="picture/2.2/Figure_10.png" alt="Hybrid Image Result" />
             </div>
         </div>
     </section>
