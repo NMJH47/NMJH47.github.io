@@ -102,7 +102,7 @@
         </p>
         <p>This formula gives a scalar value that quantifies the strength of the edge at that pixel, with larger values indicating stronger edges. The gradient magnitude image shows how fast the pixel values are changing, which corresponds to the presence of edges. To create a binary edge map, we threshold this gradient magnitude to identify the most significant edges while suppressing noise.</p>
         <p>Here is the result:</p>
-        <img src="project2/picture/1.1/output1.png" alt="Gradient Magnitude Result" />
+        <img src="picture/1.1/output1.png" alt="Gradient Magnitude Result" />
     </section>
 
     <section>
@@ -110,16 +110,16 @@
         <p>I reduce the noise that resulted from using only the finite difference operator by introducing a Gaussian smoothing filter.</p>
         <p>First, I create a Gaussian filter and convolve it with the original image to produce a smoothed version. We then calculate the image gradients and edge image by applying the finite difference operators to the smoothed image. This method gives fewer noisy edges compared to applying the finite difference directly to the original image.</p>
         <p>Next, instead of first smoothing the image and then applying the finite difference operator, I create the DoG filters by convolving the Gaussian filter with the finite difference operators. These filters can be applied directly to the original image to get the gradients and edges in one step.</p>
-        <img src="project2/picture/1.2/output2.png" alt="Gaussian Smoothing Result" />
-        <img src="project2/picture/1.2/output3.png" alt="Gaussian Smoothing Result" />
+        <img src="picture/1.2/output2.png" alt="Gaussian Smoothing Result" />
+        <img src="picture/1.2/output3.png" alt="Gaussian Smoothing Result" />
         <p><strong>Differences:</strong></p>
         <ul>
             <li><strong>Blurred Image Approach:</strong> The edges are smoother, and the background has less noise due to the Gaussian smoothing step.</li>
             <li><strong>DoG Approach:</strong> The results are very similar to the blurred image approach, but DoG allows us to achieve the result with one convolution instead of two. This is more efficient and computationally simpler.</li>
         </ul>
         <p>I can do the same thing with a single convolution instead of two by creating derivative of Gaussian filters. Convolving the Gaussian with \( D_x \) and \( D_y \) and displaying the resulting DoG filters as images. We find that they get the same result and no difference as shown.</p>
-        <img src="project2/picture/1.2/output4.png" alt="DoG Filters Result" />
-         <img src="project2/picture/1.2/output5.png" alt="DoG Filters Result" />
+        <img src="picture/1.2/output4.png" alt="DoG Filters Result" />
+         <img src="picture/1.2/output5.png" alt="DoG Filters Result" />
     </section>
 
     <section>
@@ -130,9 +130,9 @@
         <p>Working with color images introduced the need to handle multiple channels—red, green, and blue—individually. Each color channel carries distinct information, so applying blur and sharpening separately to each channel ensures that the color integrity is maintained and that the sharpening effect is evenly distributed across the entire image. This approach prevents color distortions and ensures that the enhanced details are consistent across all colors.</p>
         <p>Adjusting parameters such as the size of the Gaussian kernel, the standard deviation (sigma), and the sharpening intensity (alpha) was essential for optimizing the effects. Larger kernels and higher sigma values result in more pronounced blurring, while higher alpha values lead to stronger sharpening. Through iterative testing and fine-tuning, I was able to control the degree of blur and sharpen the images effectively, achieving the desired visual outcomes for different types of images and applications.</p>
         <p>Here are several results:</p>
-        <img src="project2/picture/2.1/output6.png" alt="Sharpened Image Result" />
-        <img src="project2/picture/2.1/output7.png" alt="Sharpened Image Result" />
-        <img src="project2/picture/2.1/output6.png" alt="Sharpened Image Result" />
+        <img src="picture/2.1/output6.png" alt="Sharpened Image Result" />
+        <img src="picture/2.1/output7.png" alt="Sharpened Image Result" />
+        <img src="picture/2.1/output6.png" alt="Sharpened Image Result" />
         <div class="image-wrapper">
     <p class="alpha = 1">Sharpened Image Result</p>
     <img src="project2/picture/2.1/1.png" alt="Sharpened Image Result" />
@@ -143,39 +143,39 @@
 </div>
         <div class="image-wrapper">
     <p class="alpha = 5">Sharpened Image Result</p>
-    <img src="project2/picture/2.1/5.png" alt="Sharpened Image Result" />
+    <img src="picture/2.1/5.png" alt="Sharpened Image Result" />
 </div>
         <div class="image-wrapper">
     <p class="alpha = 7">Sharpened Image Result</p>
-    <img src="project2/picture/2.1/7.png" alt="Sharpened Image Result" />
+    <img src="picture/2.1/7.png" alt="Sharpened Image Result" />
 </div>
         <div class="image-wrapper">
     <p class="alpha = 9">Sharpened Image Result</p>
-    <img src="project2/picture/2.1/9.png" alt="Sharpened Image Result" />
+    <img src="picture/2.1/9.png" alt="Sharpened Image Result" />
 </div>
         <img src="project2/picture/2.1/output.png" alt="Sharpened Image Result" />
         <img src="project2/picture/2.1/output1.png" alt="Sharpened Image Result" />
         <div class="image-wrapper">
     <p class="alpha = 1">Sharpened Image Result</p>
-    <img src="project2/picture/2.1/2.1.png" alt="Sharpened Image Result" />
+    <img src="picture/2.1/2.1.png" alt="Sharpened Image Result" />
 </div>
         <div class="image-wrapper">
     <p class="alpha = 3">Sharpened Image Result</p>
-    <img src="project2/picture/2.1/2.3.png" alt="Sharpened Image Result" />
+    <img src="picture/2.1/2.3.png" alt="Sharpened Image Result" />
 </div>
         <div class="image-wrapper">
     <p class="alpha = 5">Sharpened Image Result</p>
-    <img src="project2/picture/2.1/2.5.png" alt="Sharpened Image Result" />
+    <img src="picture/2.1/2.5.png" alt="Sharpened Image Result" />
 </div>
         <div class="image-wrapper">
     <p class="alpha = 7">Sharpened Image Result</p>
-    <img src="project2/picture/2.1/2.7.png" alt="Sharpened Image Result" />
+    <img src="picture/2.1/2.7.png" alt="Sharpened Image Result" />
 </div>
         <div class="image-wrapper">
     <p class="alpha = 9">Sharpened Image Result</p>
-    <img src="project2/picture/2.1/2.9.png" alt="Sharpened Image Result" />
+    <img src="picture/2.1/2.9.png" alt="Sharpened Image Result" />
 </div>
-        <img src="project2/picture/2.1/output9.png" alt="Sharpened Image Result" />
+        <img src="picture/2.1/output9.png" alt="Sharpened Image Result" />
     </section>
 
     <section>
@@ -204,12 +204,12 @@
         <p>Next, I moved on to building the Laplacian stack, which extracts the details from each layer. To create the Laplacian stack, I subtracted adjacent layers from the Gaussian stack. This subtraction helps isolate the high-frequency information, such as edges and details. Each layer shows the difference between consecutive levels of blur, capturing the details that are lost as the image becomes more blurred. The final, most blurred layer of the Gaussian stack is directly preserved as the last layer of the Laplacian stack.</p>
         <p>After generating the Laplacian stack, the next step was to reconstruct the original image. Starting from the bottom layer of the Laplacian stack, I used it as a base and applied upsampling and Gaussian blur to progressively restore details at each level. By adding back the detailed information from each Laplacian layer, I was able to reconstruct an image that closely resembles the original.</p>
         <p>This method allowed me to effectively analyze and manipulate different levels of detail in the images while ensuring that the essential details weren’t lost during the process.</p>
-        <img src="project2/picture/2.3/Figure_17.png" alt="Reconstructed Image Result" />
-        <img src="project2/picture/2.3/Figure_19.png" alt="Reconstructed Image Result" />
-        <img src="project2/picture/2.3/Figure_20.png" alt="Reconstructed Image Result" />
-        <img src="project2/picture/2.3/Figure_18.png" alt="Reconstructed Image Result" />
-        <img src="project2/picture/2.3/Figure_21.png" alt="Reconstructed Image Result" />
-        <img src="project2/picture/2.3/Figure_22.png" alt="Reconstructed Image Result" />
+        <img src="picture/2.3/Figure_17.png" alt="Reconstructed Image Result" />
+        <img src="picture/2.3/Figure_19.png" alt="Reconstructed Image Result" />
+        <img src="picture/2.3/Figure_20.png" alt="Reconstructed Image Result" />
+        <img src="picture/2.3/Figure_18.png" alt="Reconstructed Image Result" />
+        <img src="picture/2.3/Figure_21.png" alt="Reconstructed Image Result" />
+        <img src="picture/2.3/Figure_22.png" alt="Reconstructed Image Result" />
     </section>
 
     <section>
@@ -220,22 +220,22 @@
         <p>This process involved creating Gaussian and Laplacian pyramids for both images and the mask. By blending at each level of the Laplacian pyramids, the method effectively combines the low-frequency components (like the general color and lighting) and high-frequency components (like edges and textures) of both images. The mask's Gaussian pyramid ensures that the blending occurs smoothly across scales, preventing any harsh edges or noticeable seams in the final image.</p>
         <p>One of the significant advantages of using Laplacian pyramid blending is its ability to handle images with different exposures or lighting conditions. Traditional blending methods might result in visible seams or ghosting effects, but the multi-resolution approach mitigates these issues by appropriately combining image details at various levels.</p>
         <p>This technique is highly versatile and can be applied to a wide range of image blending tasks, such as creating artistic effects, panoramas, or even blending different textures in graphic design. The key is in constructing appropriate masks and pyramids to control how and where the images blend, allowing for creative and seamless composites.</p>
-        <img src="project2/picture/2.4/apple.jpeg" alt="Blended Image Result" />
-        <img src="project2/picture/2.4/orange.jpeg" alt="Blended Image Result" />
-        <img src="project2/picture/2.4/Figure_23.png" alt="Blended Image Result" />
-        <img src="project2/picture/2.4/Figure_24.png" alt="Blended Image Result" />
-        <img src="project2/picture/2.4/Figure_25.png" alt="Blended Image Result" />
-        <img src="project2/picture/2.4/Figure_26.png" alt="Blended Image Result" />
-        <img src="project2/picture/2.4/Figure_27.png" alt="Blended Image Result" />
-        <img src="project2/picture/2.4/Figure_28.png" alt="Blended Image Result" />
-        <img src="project2/picture/2.4/Figure_29.png" alt="Blended Image Result" />
-        <img src="project2/picture/2.4/Figure_30.png" alt="Blended Image Result" />
-        <img src="project2/picture/2.4/Figure_31.png" alt="Blended Image Result" />
-        <img src="project2/picture/2.4/Figure_32.png" alt="Blended Image Result" />
-        <img src="project2/picture/2.4/Figure_33.png" alt="Blended Image Result" />
-        <img src="project2/picture/2.4/Figure_34.png" alt="Blended Image Result" />
-        <img src="project2/picture/2.4/Figure_35.png" alt="Blended Image Result" />
-        <img src="project2/picture/2.4/Figure_36.png" alt="Blended Image Result" /> 
+        <img src="picture/2.4/apple.jpeg" alt="Blended Image Result" />
+        <img src="picture/2.4/orange.jpeg" alt="Blended Image Result" />
+        <img src="picture/2.4/Figure_23.png" alt="Blended Image Result" />
+        <img src="picture/2.4/Figure_24.png" alt="Blended Image Result" />
+        <img src="picture/2.4/Figure_25.png" alt="Blended Image Result" />
+        <img src="picture/2.4/Figure_26.png" alt="Blended Image Result" />
+        <img src="picture/2.4/Figure_27.png" alt="Blended Image Result" />
+        <img src="picture/2.4/Figure_28.png" alt="Blended Image Result" />
+        <img src="picture/2.4/Figure_29.png" alt="Blended Image Result" />
+        <img src="picture/2.4/Figure_30.png" alt="Blended Image Result" />
+        <img src="picture/2.4/Figure_31.png" alt="Blended Image Result" />
+        <img src="picture/2.4/Figure_32.png" alt="Blended Image Result" />
+        <img src="picture/2.4/Figure_33.png" alt="Blended Image Result" />
+        <img src="picture/2.4/Figure_34.png" alt="Blended Image Result" />
+        <img src="picture/2.4/Figure_35.png" alt="Blended Image Result" />
+        <img src="picture/2.4/Figure_36.png" alt="Blended Image Result" /> 
     </section>
 
     <footer>
