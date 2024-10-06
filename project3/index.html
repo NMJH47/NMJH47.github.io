@@ -1,1 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project3 - Guanyou Li</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.8;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        section {
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            max-width: 1200px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        p {
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: #555;
+        }
+        .image-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .image-wrapper {
+            text-align: center;
+            background-color: #f8f8f8;
+            padding: 15px;
+            border-radius: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            width: 80%;
+            margin: 0 0 20px;
+        }
+        .image-wrapper:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+        .image-wrapper p.image-title {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #888;
+        }
+        footer {
+            text-align: center;
+            margin: 40px 0;
+            font-size: 14px;
+            color: #aaa;
+        }
+        @media (max-width: 768px) {
+            h1, h2, h3 {
+                font-size: 1.5rem;
+            }
+            section {
+                padding: 15px;
+            }
+        }
+    </style>
+    <!-- Include MathJax for rendering mathematical expressions -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+    <h1>Project3 - Guanyou Li</h1>
+
+    <section>
+        <h2>Part 1. Defining Correspondences</h2>
+        <p>We need to manually define pairs of corresponding points on the two images. It’s essential to maintain a consistent order of these points on both images so that each point in Image A maps to the same point in Image B, ensuring a coherent morphing process. Even if the shapes or structures of the images differ, consistent point labeling will make the transformation process smoother.</p>
+        <p>Once the corresponding points are defined and displayed, the next step is to perform a triangulation. The purpose of triangulation is to divide the images into a series of non-overlapping triangular regions, which helps maintain the local structure during the morphing process.</p>
+        <p>Delaunay triangulation is a commonly used method as it avoids producing overly skinny triangles, which might lead to distortions. The triangulation is applied to one set of points only, but it’s best to use the average shape (the midpoint of corresponding points from both images) to reduce triangle deformations during morphing.</p>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="project3/picture/part1/1.1.png" alt="Correspondence Image 1" />
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="project3/picture/part1/1.2.png" alt="Correspondence Image 2" />
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="project3/picture/part1/1.3.png" alt="Correspondence Image 3" />
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="project3/picture/part1/1.4.png" alt="Correspondence Image 4" />
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="project3/picture/part1/1.5.png" alt="Correspondence Image 5" />
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="project3/picture/part1/1.6.png" alt="Correspondence Image 6" />
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="project3/picture/part1/1.7.png" alt="Correspondence Image 7" />
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Part 2. Computing the "Mid-way Face"</h2>
+        <p>We need to calculate the "mid-way face" between the two images. This involves determining the average of each corresponding point’s position from Image 1 and Image 2. The resulting average shape is a set of points that serves as the target for morphing both images. This step ensures that both images are warped towards a common shape, facilitating the blending process.</p>
+        <p>Once the average shape is defined, the next step is to warp both Image 1 and Image 2 to this common shape. The core of this process involves applying an affine transformation for each triangle in the triangulated mesh.</p>
+        <p>For each triangle, a transformation matrix is computed that maps the original triangle in the source image to the corresponding triangle in the average shape. This transformation matrix allows for mapping points from the source image to the average shape. Importantly, the warping is done by computing an inverse mapping, which ensures that all destination points are covered correctly without any gaps.</p>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="project3/picture/part2/2.1.png" alt="Mid-way Face Image" />
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Part 3. The Morph Sequence</h2>
+        <p>The goal of this process is to morph two images by gradually transforming one into the other. This is done by creating intermediate shapes and colors based on point correspondences between the two images.</p>
+        <p>Two main parameters, warp_frac and dissolve_frac, control the process. warp_frac determines how much of the shape warping is applied, and dissolve_frac controls how much of the color blending happens. Both parameters start at 0 and gradually increase to 1.</p>
+        <div class="image-container single-row-container">
+            <div class="image-wrapper">
+                <img src="project3/picture/part3/image1_to_image2.gif" alt="Morphing Sequence GIF" />
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Part 4. The "Mean face" of a population</h2>
+        <p>The first step involves selecting a facial dataset with annotated keypoints (facial landmarks). The keypoints are used to describe the geometry of each face in the dataset. Based on these points, the "average face shape" of the population (or a specific sub-population, e.g., age, gender, ethnicity) is computed.</p>
+        <p>The average shape is calculated by taking the mean of all the keypoints from each face in the dataset. This average shape represents the common geometry of the entire population and serves as the target shape for warping each individual face in the dataset.</p>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="project3/picture/part4/4.1.png" alt="Mean Face Image 1" />
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="project3/picture/part4/4.2.png" alt="Mean Face Image 2" />
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="project3/picture/part4/4.3.png" alt="Mean Face Image 3" />
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="project3/picture/part4/4.4.png" alt="Mean Face Image 4" />
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Part 5. Caricatures: Extrapolating from the mean</h2>
+        <p>First, the point correspondences (keypoints) of your face and the average shape calculated in the previous step are used. The difference between the keypoints of your face and the average shape is computed.</p>
+        <p>This difference represents how much your face deviates from the average facial geometry. For example, if your nose is slightly longer than average, this difference will reflect that deviation.</p>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="project3/picture/part5/5.1.png" alt="Caricature Image" />
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Part 6. Bells and Whistles</h2>
+        <p>The program reads two images: one is the example face, and the other is the average face of the desired demographic (e.g., "Chinese average woman" in this example). Each image has corresponding keypoints (landmarks) stored in a JSON file, defining important facial features like eyes, nose, and mouth.</p>
+        <p>Both images are warped to this average shape using an affine transformation. This involves calculating a transformation matrix for each triangular region (from the triangulation of the average shape) and mapping it to the corresponding region in the original images.</p>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="project3/picture/part6/6.1.png" alt="Bells and Whistles Image" />
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Guanyou Li. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
 
