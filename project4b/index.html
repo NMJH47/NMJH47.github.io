@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta Tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project4b - Guanyou Li</title>
+    <!-- Styles -->
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.8;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        section {
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            max-width: 1200px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        p {
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: #555;
+        }
+        .image-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .image-wrapper {
+            text-align: center;
+            background-color: #f8f8f8;
+            padding: 15px;
+            border-radius: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            width: 80%;
+            margin: 10px 0;
+        }
+        .image-wrapper:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+        footer {
+            text-align: center;
+            margin: 40px 0;
+            font-size: 14px;
+            color: #aaa;
+        }
+        @media (max-width: 768px) {
+            h1, h2, h3 {
+                font-size: 1.5rem;
+            }
+            section {
+                padding: 15px;
+            }
+            .image-wrapper {
+                width: 100%;
+            }
+        }
+    </style>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+    <h1>Project4b - Guanyou Li</h1>
+
+    <section>
+        <h2>Part 1: Harris Interest Point Detector</h2>
+        <p>
+            This code implements Harris corner detection combined with Adaptive Non-Maximal Suppression (ANMS) to enhance feature selection in images. First, the Harris detector identifies corner points across the image. Then, ANMS filters these corners, ensuring they are both strong in response and well-distributed.
+        </p>
+        <p>
+            I enhance Harris corner detection with Adaptive Non-Maximal Suppression to achieve high-quality, well-distributed feature points. Using the Harris method, potential corner points are identified based on their response values, which represent the likelihood of a pixel being a corner. These points are then filtered to exclude those near the image edges to avoid boundary artifacts. All detected corners are sorted by their Harris response values, keeping the strongest corners at the top. This ensures that ANMS starts with the most prominent features. For each corner point, ANMS computes a suppression radius, defined as the minimum distance to any stronger corner. This radius ensures that only the most spatially distinctive points are retained. When calculating distances, a `KDTree` structure is used to optimize the nearest-neighbor search, improving efficiency in identifying nearby points. Iterative Selection and Radius Update: As points are processed, their suppression radii are updated. Each point's radius reflects its proximity to stronger points, allowing ANMS to retain those with the highest radius. The algorithm then selects the top `n` corners with the largest suppression radii, resulting in a final set of high-quality, well-distributed feature points.
+        </p>
+        <!-- Image Insertion Point 1 -->
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="路径/到/图片1.jpg" alt="Harris Interest Point Detector" />
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Part 2: Feature Descriptor Extraction</h2>
+        <p>
+            I use a robust feature detection and description pipeline for images. It first identifies key corner points using Harris corner detection with Adaptive Non-Maximal Suppression (ANMS) to ensure the strongest and most spatially distinct features are selected. Around each corner, it extracts small, normalized patches as feature descriptors, capturing unique image details for each point. This approach is ideal for tasks like image matching, where well-defined, distributed, and distinctive features are crucial. Additionally, the code includes visualizations to display detected corners and sample descriptors, making it easy to verify feature quality.
+        </p>
+        <!-- Image Insertion Point 2 -->
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="路径/到/图片2.jpg" alt="Feature Descriptor Extraction" />
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Part 3: Feature Matching</h2>
+        <p>
+            I started by applying Harris corner detection to locate key feature points in each image, using Adaptive Non-Maximal Suppression (ANMS) to ensure these points are both strong and well-distributed. I then extracted image patches around each corner and normalized them into feature descriptors, capturing unique local details for reliable matching. To match features between two images, I used a nearest-neighbor approach with distance and ratio thresholds, retaining only high-quality matches. This step effectively filters out noisy matches, improving matching precision. By connecting matched points across the two images, I visually inspect the accuracy of the matches, making it easy to verify that features correspond well between images. For efficiency, I included feature saving and loading functionality, allowing for reuse without recalculating descriptors.
+        </p>
+        <!-- Image Insertion Point 3 -->
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="路径/到/图片3.jpg" alt="Feature Matching" />
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Part 4: RANSAC for Homography Estimation</h2>
+        <p>
+            RANSAC is used to compute a robust homography matrix from the matched points. It iteratively samples small groups of matches, computes a potential homography, and checks how many matches fit this model within a threshold. Each match is projected to the second image using the computed homography, and its distance from the true position is calculated. Matches with distances below the threshold are counted as inliers. After many iterations, the homography matrix with the highest inlier count is chosen as the final transformation, effectively filtering out outliers. This RANSAC-based approach is essential for dealing with noisy or imperfect feature matches, ensuring that the homography transformation is estimated robustly and accurately.
+        </p>
+        <!-- Image Insertion Point 4 -->
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="路径/到/图片4.jpg" alt="RANSAC Homography Estimation" />
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Part 5: Mosaic Image Generation</h2>
+        <p>
+            Next is the mosaic image generated by the previous method. These four pictures are Figure 1, Figure 2, Figure 3, and Figure 4.
+        </p>
+        <!-- Image Insertion Point 5 -->
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="路径/到/图片5.jpg" alt="Input Images for Mosaic" />
+            </div>
+        </div>
+        <p>
+            This is the mosaic image of Figure 1 and Figure 2.
+        </p>
+        <!-- Image Insertion Point 6 -->
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="路径/到/图片6.jpg" alt="Mosaic of Figure 1 and 2" />
+            </div>
+        </div>
+        <p>
+            This is the mosaic image of Figure 2 and Figure 3.
+        </p>
+        <!-- Image Insertion Point 7 -->
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="路径/到/图片7.jpg" alt="Mosaic of Figure 2 and 3" />
+            </div>
+        </div>
+        <p>
+            This is the mosaic image of Figure 3 and Figure 4.
+        </p>
+        <!-- Image Insertion Point 8 -->
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="路径/到/图片8.jpg" alt="Mosaic of Figure 3 and 4" />
+            </div>
+        </div>
+        <p>
+            It can be seen that the creation of the mosaic image is basically successful. The only drawback is that due to the problem of the image itself, ghosting is inevitable.
+        </p>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Guanyou Li. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
