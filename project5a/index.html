@@ -1,1 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project 5A</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        section {
+            margin: 20px auto;
+            padding: 20px;
+            max-width: 1200px;
+            background-color: #ffffff;
+            border-radius: 10px;
+        }
+        .image-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .image-wrapper {
+            width: 80%;
+            margin: 0 0 20px;
+        }
+        footer {
+            text-align: center;
+            margin: 40px 0;
+            font-size: 14px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Project 5A</h1>
+
+    <section>
+        <h2>1.1 Implementing the forward process</h2>
+        <p>I implemented the core process of a diffusion model, which incrementally deconstructs an image by adding noise step-by-step, simulating a way to generate new images...</p>
+        <div class="image-container">
+           <div class="image-wrapper">
+              <img src="./picture/1.1/campanile.jpg" alt="Forward Process Example" />
+              <p style="text-align: center; font-style: italic; color: #555;">This is the original photo.</p>
+          </div>
+        </div>
+         <div class="image-container">
+             <div class="image-wrapper">
+                <img src="./picture/1.1/t=250.png" alt="Forward Process Example" />
+                <p style="text-align: center; font-style: italic; color: #555;">/t=250</p>
+            </div>
+        </div>
+        <div class="image-container">
+             <div class="image-wrapper">
+                <img src="./picture/1.1/t=500.png" alt="Forward Process Example" />
+                <p style="text-align: center; font-style: italic; color: #555;">/t=500</p>
+            </div>
+        </div>
+        <div class="image-container">
+             <div class="image-wrapper">
+                <img src="./picture/1.1/t=750.png" alt="Forward Process Example" />
+                <p style="text-align: center; font-style: italic; color: #555;">/t=750</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>1.2 Classical Denoising</h2>
+        <p>I explored a classical approach to denoising using Gaussian blur on noisy images from the previous diffusion steps...</p>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.2/download.png" alt="Classical Denoising Example" />
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>1.3 Implementing One Step Denoising</h2>
+        <p>In this step, I leveraged a pretrained diffusion model to achieve advanced denoising on noisy images generated in the previous sections...</p>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.3/download.png" alt="One Step Denoising Example" />
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>1.4 Implementing Iterative Denoising</h2>
+        <p>In this section, I implemented a process to denoise images iteratively using a diffusion model, allowing us to recover high-quality images even when the initial noise is significant...</p>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.4/download.png" alt="Iterative Denoising Example" />
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>1.5 Diffusion Model Sampling</h2>
+        <p>I used the iterative denoising process to generate images from scratch, starting with pure noise...</p>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.5/1.png" alt="Diffusion Model Sampling Example" />
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.5/2.png" alt="Diffusion Model Sampling Example" />
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.5/3.png" alt="Diffusion Model Sampling Example" />
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.5/4.png" alt="Diffusion Model Sampling Example" />
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.5/5.png" alt="Diffusion Model Sampling Example" />
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>1.6 Classifier Free Guidance</h2>
+        <p>In this part, I improved image quality for generation by applying **Classifier-Free Guidance (CFG)** to the diffusion model...</p>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.6/1.png" alt="Classifier Free Guidance Example" />
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.6/2.png" alt="Classifier Free Guidance Example" />
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.6/3.png" alt="Classifier Free Guidance Example" />
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.6/4.png" alt="Classifier Free Guidance Example" />
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.6/5.png" alt="Classifier Free Guidance Example" />
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>1.7 Image-to-image Translation</h2>
+        <p>In this part, I applied a controlled noise and denoise process to create editable versions of an image...</p>
+        <div class="image-container">
+              <div class="image-wrapper">
+                  <img src="./picture/1.7/1.png" alt="Classifier Free Guidance Example" />
+              </div>
+          </div>  
+        <div class="image-container">
+             <div class="image-wrapper">
+                <img src="./picture/1.7/test1.jpg" alt="Forward Process Example" />
+                <p style="text-align: center; font-style: italic; color: #555;">This is the original test photo 1.</p>
+            </div>
+          </div>
+         <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.7/2.png" alt="Classifier Free Guidance Example" />
+            </div>
+        </div>
+        <div class="image-container">
+           <div class="image-wrapper">
+              <img src="./picture/1.7/test2.jpg" alt="Forward Process Example" />
+              <p style="text-align: center; font-style: italic; color: #555;">This is the original test photo 2.</p>
+          </div>
+        </div>
+    
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.7/3.png" alt="Classifier Free Guidance Example" />
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>1.7.1 Editing Hand-Drawn and Web Images</h2>
+        <p>In this section, I experimented with projecting non-realistic images onto the natural image manifold using a diffusion model with Classifier-Free Guidance (CFG)...</p>
+        <div class="image-container">
+           <div class="image-wrapper">
+              <img src="./picture/1.7.1/1.png" alt="Forward Process Example" />
+              <p style="text-align: center; font-style: italic; color: #555;">This is the original test photo 4.</p>
+          </div>
+        </div>
+         <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.7.1/1.1.png" alt="Classifier Free Guidance Example" />
+            </div>
+        </div>
+        <div class="image-container">
+           <div class="image-wrapper">
+              <img src="./picture/1.7.1/hd1.png" alt="Forward Process Example" />
+              <p style="text-align: center; font-style: italic; color: #555;">This is the original hand_written test photo 1.</p>
+          </div>
+        </div>
+         <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.7.1/2.png" alt="Classifier Free Guidance Example" />
+            </div>
+        </div>
+        <div class="image-container">
+           <div class="image-wrapper">
+              <img src="./picture/1.7.1/hd2.png" alt="Forward Process Example" />
+              <p style="text-align: center; font-style: italic; color: #555;">This is the original hand_written test photo 2.</p>
+          </div>
+        </div>
+         <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.7.1/3.png" alt="Classifier Free Guidance Example" />
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>1.7.2 Inpainting</h2>
+        <p>In this section, I implemented an inpainting function using a diffusion-based approach to fill in specified regions of an image...</p>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.7.2/1.png" alt="Classifier Free Guidance Example" />
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.7.2/2.png" alt="Classifier Free Guidance Example" />
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.7.2/3.png" alt="Classifier Free Guidance Example" />
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>1.7.3 Text-Conditioned Image-to-image Translation</h2>
+        <p>In this part, I implemented text-conditioned image-to-image translation using a diffusion model guided by a specific prompt...</p>
+       <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.7.3/1.png" alt="Classifier Free Guidance Example" />
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.7.3/2.png" alt="Classifier Free Guidance Example" />
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.7.3/3.png" alt="Classifier Free Guidance Example" />
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>1.8 Visual Anagrams</h2>
+        <p>I created **Visual Anagrams** using a diffusion model to produce optical illusions where an image appears as one concept when right-side up and as another when flipped upside down...</p>
+        <div class="image-container">
+           <div class="image-wrapper">
+              <img src="./picture/1.8/1.png" alt="Forward Process Example" />
+          </div>
+        </div>
+        <div class="image-container">
+           <div class="image-wrapper">
+              <img src="./picture/1.8/2.png" alt="Forward Process Example" />
+          </div>
+        </div>
+        <div class="image-container">
+           <div class="image-wrapper">
+              <img src="./picture/1.8/3.png" alt="Forward Process Example" />
+          </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>1.10 Hybrid Images</h2>
+        <p>In this section, I implemented **Factorized Diffusion** to create hybrid images using a diffusion model...</p>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.10/1.png" alt="Hybrid Images Example" />
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.10/2.png" alt="Hybrid Images Example" />
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/1.10/e.png" alt="Hybrid Images Example" />
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Guanyou Li. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
 
