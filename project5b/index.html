@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Project 5b - Guanyou Li</title>
+    <!-- Include MathJax for rendering mathematical formulas -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -10,7 +12,7 @@
             padding: 0;
             background-color: #f0f0f0;
         }
-        h1, h2 {
+        h1, h2, h3 {
             text-align: center;
         }
         section {
@@ -28,10 +30,11 @@
             display: flex;
             justify-content: center;
             margin-top: 20px;
+            flex-wrap: wrap;
         }
         .image-wrapper {
-            width: 80%;
-            margin: 0 0 20px;
+            width: 30%;
+            margin: 10px;
         }
         .image-wrapper img {
             max-width: 100%;
@@ -93,34 +96,25 @@
 
             Implementing this denoising U-Net involved a deep understanding of convolutional neural networks and their mathematical foundations. By leveraging convolutional operations, activation functions like GELU, and optimization algorithms, the model effectively learned to map noisy images back to their clean counterparts. This project not only demonstrated the practical applications of deep learning in image restoration but also provided a solid foundation for more advanced tasks such as image segmentation and generative modeling.
         </p>
+        <!-- Images for Part 1 -->
         <div class="image-container">
             <div class="image-wrapper">
-                <p class="caption">./picture/part1/1.1.png</p>
+                <img src="./picture/part1/1.1.png" alt="Part 1 Image 1">
             </div>
-        </div>
-         <div class="image-container">
             <div class="image-wrapper">
-                <p class="caption">./picture/part1/1.2.png</p>
+                <img src="./picture/part1/1.2.png" alt="Part 1 Image 2">
             </div>
-        </div>
-         <div class="image-container">
             <div class="image-wrapper">
-                <p class="caption">./picture/part1/1.3.png</p>
+                <img src="./picture/part1/1.3.png" alt="Part 1 Image 3">
             </div>
-        </div>
-         <div class="image-container">
             <div class="image-wrapper">
-                <p class="caption">./picture/part1/1.4.png</p>
+                <img src="./picture/part1/1.4.png" alt="Part 1 Image 4">
             </div>
-        </div>
-         <div class="image-container">
             <div class="image-wrapper">
-                <p class="caption">./picture/part1/1.5.png</p>
+                <img src="./picture/part1/1.5.png" alt="Part 1 Image 5">
             </div>
-        </div>
-         <div class="image-container">
             <div class="image-wrapper">
-                <p class="caption">./picture/part1/1.6.png</p>
+                <img src="./picture/part1/1.6.png" alt="Part 1 Image 6">
             </div>
         </div>
     </section>
@@ -210,33 +204,25 @@
 
             We can clearly see that when guidance_scale = 0, the final image does not successfully form numbers, while when guidance_scale = 5 and 10, the final image successfully forms numbers and the actual effect is not much different.
         </p>
-         <h3>guidance_scale=0</h3>
+         <!-- Images for Part 2 -->
+        <!-- Group for guidance_scale=0 -->
+        <h3>guidance_scale=0</h3>
         <div class="image-container">
             <div class="image-wrapper">
                 <img src="./picture/part2/0.1.png" alt="guidance_scale=0 image 1">
             </div>
-        </div>
-        <div class="image-container">
             <div class="image-wrapper">
                 <img src="./picture/part2/0.2.png" alt="guidance_scale=0 image 2">
             </div>
-        </div>
-        <div class="image-container">
             <div class="image-wrapper">
                 <img src="./picture/part2/0.3.png" alt="guidance_scale=0 image 3">
             </div>
-        </div>
-        <div class="image-container">
             <div class="image-wrapper">
                 <img src="./picture/part2/0.4.png" alt="guidance_scale=0 image 4">
             </div>
-        </div>
-        <div class="image-container">
             <div class="image-wrapper">
                 <img src="./picture/part2/0.5.png" alt="guidance_scale=0 image 5">
             </div>
-        </div>
-        <div class="image-container">
             <div class="image-wrapper">
                 <img src="./picture/part2/0.6.png" alt="guidance_scale=0 image 6">
             </div>
@@ -248,28 +234,18 @@
             <div class="image-wrapper">
                 <img src="./picture/part2/5.1.png" alt="guidance_scale=5 image 1">
             </div>
-        </div>
-        <div class="image-container">
             <div class="image-wrapper">
                 <img src="./picture/part2/5.2.png" alt="guidance_scale=5 image 2">
             </div>
-        </div>
-        <div class="image-container">
             <div class="image-wrapper">
                 <img src="./picture/part2/5.3.png" alt="guidance_scale=5 image 3">
             </div>
-        </div>
-        <div class="image-container">
             <div class="image-wrapper">
                 <img src="./picture/part2/5.4.png" alt="guidance_scale=5 image 4">
             </div>
-        </div>
-        <div class="image-container">
             <div class="image-wrapper">
                 <img src="./picture/part2/5.5.png" alt="guidance_scale=5 image 5">
             </div>
-        </div>
-        <div class="image-container">
             <div class="image-wrapper">
                 <img src="./picture/part2/5.6.png" alt="guidance_scale=5 image 6">
             </div>
@@ -281,33 +257,22 @@
             <div class="image-wrapper">
                 <img src="./picture/part2/10.1.png" alt="guidance_scale=10 image 1">
             </div>
-        </div>
-        <div class="image-container">
             <div class="image-wrapper">
                 <img src="./picture/part2/10.2.png" alt="guidance_scale=10 image 2">
             </div>
-        </div>
-        <div class="image-container">
             <div class="image-wrapper">
                 <img src="./picture/part2/10.3.png" alt="guidance_scale=10 image 3">
             </div>
-        </div>
-        <div class="image-container">
             <div class="image-wrapper">
                 <img src="./picture/part2/10.4.png" alt="guidance_scale=10 image 4">
             </div>
-        </div>
-        <div class="image-container">
             <div class="image-wrapper">
                 <img src="./picture/part2/10.5.png" alt="guidance_scale=10 image 5">
             </div>
-        </div>
-        <div class="image-container">
             <div class="image-wrapper">
                 <img src="./picture/part2/10.6.png" alt="guidance_scale=10 image 6">
             </div>
         </div>
-         
     </section>
 
     <footer>
