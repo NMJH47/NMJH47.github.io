@@ -130,87 +130,116 @@
     <section>
         <h2>Part 2</h2>
         <p>
-            <strong>Part 2: Training a DDPM Denoising U-Net</strong>
+            <strong>Part 2.1: Time Conditioning to UNet</strong>
 
-            As a developer exploring generative modeling techniques, I focused on implementing and training a Denoising Diffusion Probabilistic Model (DDPM) using a U-Net architecture. The aim was to create a model capable of generating high-quality images by learning to reverse a diffusion process that progressively adds noise to data. This involved refactoring the standard unconditional U-Net to incorporate time and class conditioning mechanisms suitable for the DDPM framework, as well as implementing the mathematical formulations of both the forward and reverse diffusion processes.
+           In implementing the diffusion model, I delved deeply into the mathematical foundations of stochastic processes and denoising score matching. The core idea revolves around modeling the data distribution by progressively adding Gaussian noise and then training a model to reverse this process. This approach allows the model to generate new data samples that closely resemble the original data distribution.
 
-            To adapt the U-Net for the DDPM, I integrated conditioning on the diffusion time steps and, optionally, on class labels. This modification allows the network to model the data distribution over the diffusion process effectively. Time conditioning was achieved by embedding each diffusion time step into a higher-dimensional representation using fully connected layers. This enables the network to adjust its computations based on the progression of the diffusion process. Similarly, class labels were one-hot encoded and passed through fully connected layers to produce class embeddings, allowing for class-conditional generation.
+**Forward Diffusion Process**
 
-            These embeddings were used to modulate the feature maps within the U-Net at various stages. Specifically, the time and class embeddings were employed to scale and shift the feature maps, effectively guiding the network's output based on the current time step and desired class. Mathematically, if \( h \) represents the feature map, and \( e_t \) and \( e_c \) are the time and class embeddings, the modulated feature map \( h' \) can be expressed as:
+The forward diffusion process incrementally adds Gaussian noise to the data over \( T \) timesteps. At each timestep \( t \), noise is added according to a predefined schedule. Mathematically, this process is defined as:
 
-            \[
-            h' = h \odot e_c + e_t
-            \]
+\[
+q(\mathbf{x}_t \mid \mathbf{x}_{t-1}) = \mathcal{N}\left( \mathbf{x}_t; \sqrt{\alpha_t} \mathbf{x}_{t-1}, \beta_t \mathbf{I} \right),
+\]
 
-            where \( \odot \) denotes element-wise multiplication. This modulation allows the network to incorporate temporal and class information directly into its computations, which is crucial for accurately modeling the reverse diffusion process.
+where \( \alpha_t = 1 - \beta_t \) and \( \beta_t \) is the noise variance at timestep \( t \). By composing these transitions, the noisy data at any timestep \( t \) can be expressed directly in terms of the original data \( \mathbf{x}_0 \):
 
-            Implementing the DDPM required defining both the forward diffusion process and the reverse denoising process. In the forward process, noise is gradually added to the data over a sequence of time steps according to a predefined schedule of noise levels \( \beta_t \). The forward process can be expressed recursively using Gaussian transitions:
+\[
+\mathbf{x}_t = \sqrt{\bar{\alpha}_t} \mathbf{x}_0 + \sqrt{1 - \bar{\alpha}_t} \boldsymbol{\epsilon},
+\]
 
-            \[
-            q(x_t | x_{t-1}) = \mathcal{N}\left( x_t; \sqrt{1 - \beta_t} \, x_{t-1}, \beta_t \, \mathbf{I} \right)
-            \]
+with \( \bar{\alpha}_t = \prod_{s=1}^t \alpha_s \) and \( \boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I}) \). This equation shows that the data becomes increasingly noisy as \( t \) increases.
 
-            This allows sampling of a noisy version of the original data \( x_0 \) at any time step \( t \) directly:
+**Noise Schedule**
 
-            \[
-            x_t = \sqrt{\bar{\alpha}_t} \, x_0 + \sqrt{1 - \bar{\alpha}_t} \, \epsilon
-            \]
+The noise schedule determines how \( \beta_t \) changes over time. A linear schedule interpolating between a starting value \( \beta_{\text{start}} \) and an ending value \( \beta_{\text{end}} \) is used:
 
-            where:
+\[
+\beta_t = \beta_{\text{start}} + \frac{t}{T} \left( \beta_{\text{end}} - \beta_{\text{start}} \right).
+\]
 
-            - \( \alpha_t = 1 - \beta_t \)
-            - \( \bar{\alpha}_t = \prod_{s=1}^t \alpha_s \)
-            - \( \epsilon \sim \mathcal{N}(0, \mathbf{I}) \)
+This schedule affects the cumulative product \( \bar{\alpha}_t \), which is crucial for both the forward diffusion and reverse denoising processes.
 
-            The reverse diffusion process aims to recover \( x_0 \) from \( x_T \) by learning the conditional probabilities \( p_\theta(x_{t-1} | x_t) \). The U-Net model is trained to predict the noise \( \epsilon \) added at each step, rather than directly predicting \( x_{t-1} \). The training objective minimizes the expected mean squared error between the predicted noise and the true noise:
+**Reverse Diffusion Process**
 
-            \[
-            L(\theta) = \mathbb{E}_{x_0, t, \epsilon} \left[ \left\| \epsilon - \epsilon_\theta(x_t, t, c) \right\|^2 \right]
-            \]
+The goal is to learn the reverse of the forward process, denoted as \( p_\theta(\mathbf{x}_{t-1} \mid \mathbf{x}_t) \), which ideally inverts the noise addition:
 
-            where \( \epsilon_\theta(x_t, t, c) \) is the model's prediction of the noise given the noisy input \( x_t \), time step \( t \), and optional class label \( c \).
+\[
+p_\theta(\mathbf{x}_{t-1} \mid \mathbf{x}_t) = \mathcal{N}\left( \mathbf{x}_{t-1}; \boldsymbol{\mu}_\theta(\mathbf{x}_t, t), \sigma_t^2 \mathbf{I} \right).
+\]
 
-            During sampling, the reverse process is performed iteratively, starting from pure noise \( x_T \) and progressively denoising it to obtain \( x_0 \). At each step \( t \), the model predicts the noise component \( \epsilon_\theta(x_t, t, c) \), which is then used to compute the mean \( \mu_t \) of the posterior distribution:
+Here, \( \boldsymbol{\mu}_\theta \) is the mean predicted by a neural network conditioned on \( \mathbf{x}_t \) and \( t \), and \( \sigma_t^2 \) is the variance, which can be set based on the forward process.
 
-            \[
-            \mu_t = \frac{1}{\sqrt{\alpha_t}} \left( x_t - \frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \, \epsilon_\theta(x_t, t, c) \right)
-            \]
+**Training Objective**
 
-            A new sample \( x_{t-1} \) is then drawn from a normal distribution centered at \( \mu_t \) with variance \( \sigma_t^2 \), effectively reversing the noise addition:
+Training aims to minimize the difference between the true noise \( \boldsymbol{\epsilon} \) and the noise predicted by the neural network \( \boldsymbol{\epsilon}_\theta \). The simplified loss function used is:
 
-            \[
-            x_{t-1} \sim \mathcal{N}\left( \mu_t, \sigma_t^2 \, \mathbf{I} \right)
-            \]
+\[
+\mathcal{L} = \mathbb{E}_{\mathbf{x}_0, \boldsymbol{\epsilon}, t} \left[ \left\| \boldsymbol{\epsilon} - \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t) \right\|^2 \right].
+\]
 
-            where:
+This loss is derived from variational lower bounds and is a form of denoising score matching, encouraging the model to accurately predict the noise at each timestep.
 
-            - \( \sigma_t^2 = \frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \, \beta_t \)
+**Time-Conditioned Neural Network**
 
-            To enhance the quality of generated images, especially in class-conditional generation, I employed classifier-free guidance. This technique involves generating both conditional and unconditional predictions and combining them to strengthen the conditioning signal:
+The neural network \( \boldsymbol{\epsilon}_\theta \) is designed to predict the noise present in the data at each timestep. It is conditioned on \( t \) to account for the time-dependent nature of the noise addition. The network architecture includes:
 
-            \[
-            \epsilon_{\text{guided}} = \epsilon_{\text{uncond}} + w \left( \epsilon_{\text{cond}} - \epsilon_{\text{uncond}} \right)
-            \]
+- **Time Embedding**: Encoding the timestep \( t \) into a higher-dimensional representation to provide temporal information to the network.
+- **UNet Architecture**: A convolutional network with downsampling and upsampling paths, capturing multi-scale spatial features and allowing skip connections for efficient gradient flow.
 
-            where \( w \) is the guidance scale controlling the influence of the conditioning. This approach amplifies the difference between conditional and unconditional predictions, leading to samples that better adhere to the desired class characteristics.
+**Sampling Procedure**
 
-            Throughout the implementation, careful attention was paid to the mathematical details of the diffusion processes. Precomputing terms like \( \bar{\alpha}_t \), \( \sqrt{\bar{\alpha}_t} \), and \( \sqrt{1 - \bar{\alpha}_t} \) was essential for computational efficiency. Random sampling of time steps during training ensured that the model learned to predict the noise across all stages of the diffusion process.
+To generate new samples, the process starts with Gaussian noise \( \mathbf{x}_T \) and iteratively applies the learned reverse transitions:
 
-            By integrating these mathematical principles into the U-Net architecture and implementing the DDPM framework, I successfully developed a model capable of generating high-quality images through the reverse diffusion process. This work not only deepened my understanding of diffusion-based generative models but also demonstrated the practical application of complex mathematical concepts in deep learning.
+\[
+\mathbf{x}_{t-1} = \frac{1}{\sqrt{\alpha_t}} \left( \mathbf{x}_t - \frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t) \right) + \sigma_t \mathbf{z},
+\]
 
-            Upon examining the provided code, particularly the implementation of the Denoising Diffusion Probabilistic Model (DDPM) using a U-Net architecture, I observe that Classifier-Free Guidance (CFG) is utilized to enhance the quality and fidelity of the generated images, especially in class-conditional image generation tasks. The `ConditionalUNet` class is designed to accept the noisy input image `x_t`, the class label `c`, and the normalized time step `t` as inputs. This network integrates time and class embeddings through fully connected layers (`FCBlock`), conditioning the model's predictions on both the progression of the diffusion process and the desired class label. During training, the model learns to predict the added noise `epsilon` given these inputs, and a masking mechanism (`mask`) is employed to randomly omit conditioning information with a probability `p_uncond`. This mechanism is crucial for implementing CFG, as it allows the model to perform both conditional and unconditional generation by sometimes providing and sometimes withholding the class information during training.
+where \( \mathbf{z} \sim \mathcal{N}(\mathbf{0}, \mathbf{I}) \) if \( t > 1 \) and \( \mathbf{z} = \mathbf{0} \) if \( t = 1 \), and \( \sigma_t = \sqrt{\beta_t} \). This equation updates the sample by removing the estimated noise and adding a small amount of random noise to maintain stochasticity, gradually refining the sample towards the data distribution.
 
-            In the reverse diffusion process, during sampling, the model computes both conditional and unconditional predictions. The conditional prediction (`eps_cond`) is generated when the model is conditioned on the class label, while the unconditional prediction (`eps_uncond`) is produced without any class conditioning (when the class label is masked out). These two predictions are then combined using a guidance scale (`guidance_scale`) to produce the final guided prediction (`eps_theta`). This combination is mathematically expressed as:
+**Mathematical Derivation of Key Terms**
 
-            \[
-            \epsilon_{\text{guided}} = \epsilon_{\text{uncond}} + w \left( \epsilon_{\text{cond}} - \epsilon_{\text{uncond}} \right)
-            \]
+- **Cumulative Product of Alphas**:
 
-            where \( w \) is the guidance scale controlling the strength of the conditioning signal. This formula effectively amplifies the influence of the class conditioning by emphasizing the difference between the conditional and unconditional predictions, pushing the generated samples toward the desired class characteristics.
+  \[
+  \bar{\alpha}_t = \prod_{s=1}^t \alpha_s.
+  \]
 
-            I believe that Classifier-Free Guidance is functioning as a technique to improve the quality of generated images in conditional generative models without relying on an external classifier for guidance. Instead, it leverages the generative model's own capacity to understand both general data distributions and class-specific features by training it to perform both conditional and unconditional generation. During sampling, CFG allows the model to balance diversity and fidelity by adjusting the guidance scale, enhancing the conditioning signal without the need for an external classifier. This results in images that are not only high in quality but also closely aligned with the specified class labels, leading to more cohesive and effective generative modeling. By integrating conditional and unconditional predictions within the same model and modulating the influence of conditioning, CFG simplifies the training and sampling processes while improving the overall performance of the model in class-conditional image generation tasks.
+- **Variance Terms**:
 
-            We can clearly see that when guidance_scale = 0, the final image does not successfully form numbers, while when guidance_scale = 5 and 10, the final image successfully forms numbers and the actual effect is not much different.
+  \[
+  \beta_t = 1 - \alpha_t,
+  \]
+  
+  \[
+  \tilde{\beta}_t = \beta_t \frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t}.
+  \]
+
+- **Mean of Reverse Process**:
+
+  The mean \( \boldsymbol{\mu}_\theta(\mathbf{x}_t, t) \) for the reverse process is derived based on the posterior distribution \( q(\mathbf{x}_{t-1} \mid \mathbf{x}_t, \mathbf{x}_0) \):
+
+  \[
+  \boldsymbol{\mu}_\theta(\mathbf{x}_t, t) = \frac{1}{\sqrt{\alpha_t}} \left( \mathbf{x}_t - \frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t) \right).
+  \]
+
+**Theoretical Foundations**
+
+This approach is grounded in several theoretical concepts:
+
+- **Stochastic Differential Equations (SDEs)**: The diffusion process can be viewed as a discretization of an SDE, connecting discrete timesteps to continuous-time diffusion models.
+- **Score Matching**: The model implicitly estimates the score function \( \nabla_{\mathbf{x}} \log q_t(\mathbf{x}) \), which is the gradient of the log probability density of the noisy data at timestep \( t \).
+- **Variational Inference**: The training objective is derived from maximizing a variational lower bound on the data likelihood, framing the diffusion model within probabilistic modeling and allowing for principled training.
+
+**Practical Implementation Details**
+
+- **Random Timestep Selection**: During training, timesteps \( t \) are randomly sampled for each data point to ensure the model learns to denoise across all stages of the diffusion process.
+- **Normalization of Timestep**: The timestep \( t \) is normalized (e.g., \( t / T \)) before being input into the network, which helps in stabilizing training and improving performance.
+- **Loss Computation**: The mean squared error loss between the true noise \( \boldsymbol{\epsilon} \) and the predicted noise \( \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t) \) guides the model to accurately estimate the noise component at each timestep.
+
+**Conclusion**
+
+By integrating these mathematical concepts, the model effectively learns to reverse the diffusion process, transforming noisy data back into samples from the original data distribution. The time-conditioned neural network captures both the temporal dynamics of noise addition and the spatial structures within the data, allowing for accurate noise prediction and high-quality sample generation. This method leverages the interplay between stochastic processes, neural network approximation, and probabilistic modeling to model complex data distributions and generate new, realistic data samples.
         </p>
          <!-- Images for Part 2 -->
         <!-- Group for guidance_scale=0 -->
