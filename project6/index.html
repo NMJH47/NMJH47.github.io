@@ -1,1 +1,276 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Project6-Guanyou Li</title>
+    <!-- Include MathJax for rendering mathematical formulas -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        h1, h2, h3 {
+            text-align: center;
+        }
+        section {
+            margin: 20px auto;
+            padding: 20px;
+            max-width: 1200px;
+            background-color: #ffffff;
+            border-radius: 10px;
+        }
+        p {
+            text-align: justify;
+            line-height: 1.6;
+        }
+        .image-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .image-wrapper {
+            display: inline-block;
+            margin: 10px;
+        }
+        .image-wrapper img {
+            max-width: 80%;
+            height: auto;
+        }
+        .caption {
+            text-align: center;
+            font-style: italic;
+            color: #555;
+        }
+        footer {
+            text-align: center;
+            margin: 40px 0;
+            font-size: 14px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Project6-Guanyou Li</h1>
+
+    <section>
+        <h2>Part 2.1</h2>
+        <p>
+            This code implements Poisson image reconstruction, a computational method used to reconstruct a grayscale image from its gradients. The reconstruction is governed by mathematical constraints on the horizontal and vertical gradients of the image, ensuring that the gradients of the reconstructed image closely match those of the input. Additionally, a fixed point constraint is applied to remove ambiguity caused by the unknown constant offset in gradient-based reconstruction.
+            In mathematical terms, let \( s(x,y) \) represent the input grayscale image. The reconstruction is based on the following principles:
+            <ol>
+                <li>
+                    <strong>Gradient Constraints:</strong>
+                    <ul>
+                        <li>
+                            Horizontal gradients: \( s(x+1,y) - s(x,y) = v(x+1,y) - v(x,y) \)
+                        </li>
+                        <li>
+                            Vertical gradients: \( s(x,y+1) - s(x,y) = v(x,y+1) - v(x,y) \)
+                        </li>
+                    </ul>
+                    These equations ensure that the reconstructed image \( v(x,y) \) retains the gradient characteristics of the input \( s(x,y) \).
+                </li>
+                <li>
+                    <strong>Fixed Point Constraint:</strong>
+                    <ul>
+                        <li>
+                            One pixel value is fixed to resolve the constant ambiguity: \( v(0,0) = s(0,0) \)
+                        </li>
+                    </ul>
+                    The above constraints are assembled into a sparse linear system of equations, represented as:
+                    \[
+                    A \cdot \mathbf{v} = \mathbf{b}
+                    \]
+                    Where:
+                    <ul>
+                        <li> \( A \) is a sparse matrix encoding the gradient constraints, </li>
+                        <li> \( \mathbf{b} \) contains the gradient differences from \( s(x,y) \), </li>
+                        <li> \( \mathbf{v} \) represents the unknown pixel values of the reconstructed image. </li>
+                    </ul>
+                    The least-squares solution to this system is:
+                    \[
+                    \mathbf{v} = \text{argmin}_{\mathbf{v}} \| A \cdot \mathbf{v} - \mathbf{b} \|^2
+                    \]
+                    This problem is efficiently solved using the `scipy.sparse.linalg.lsqr` function.
+                    After solving, the pixel values \( \mathbf{v} \) are reshaped to the image dimensions and clipped to the valid range [0,255]. The code then computes the mean squared error (MSE) to evaluate the reconstruction quality, defined as:
+                    \[
+                    \text{MSE} = \frac{1}{N} \sum_{x, y} \left( s(x, y) - v(x, y) \right)^2
+                    \]
+                    where \( N \) is the total number of pixels.
+                    The main function orchestrates the process by:
+                    <ol>
+                        <li>Loading the input image \( s(x,y) \),</li>
+                        <li>Performing the reconstruction using `poisson_reconstruct`,</li>
+                        <li>Calculating and printing the MSE,</li>
+                        <li>Visualizing the original image, reconstructed image, and the absolute difference between them.</li>
+                    </ol>
+                </li>
+            </ol>
+        </p>
+        <!-- Images for Part 2.1 -->
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/7db1e27e-5bf5-4164-a695-11e2e11e17a2.png" alt="Image Insertion Point 1">
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Part 2.2</h2>
+        <p>
+            I developed this code to implement Poisson Image Blending, a technique that allows for seamless integration of a source object into a target background while ensuring smooth gradient transitions at the boundaries. The process begins with interactive region selection, where I use the `getMask` function to let the user draw a polygon around the desired object in the source image. This polygon is converted into a binary mask \( \text{Mask}(x,y) \), defined as:
+            \[
+            \text{Mask}(x, y) = \begin{cases} 
+                1, & \text{if } (x, y) \text{ is inside the polygon}, \\
+                0, & \text{otherwise}.
+            \end{cases}
+            \]
+            The precision of the mask depends on the image resolution and the complexity of the polygon defined by the vertices \( (x_i, y_i) \). The result is a binary matrix representing the selected region and a list of the polygon's vertices for further processing.
+            Next, I align the source image and mask to the target image using the `alignSource` function. The user selects a point in the target image to specify where the source object should be placed. To facilitate accurate placement, I calculate a scale factor:
+            \[
+            \text{Scale Factor} = \frac{\text{Original Dimension}}{\text{Resized Dimension}}.
+            \]
+            This scales the target image for better viewing during selection. The source image is then aligned by calculating the bounding box:
+            \[
+            \begin{align*} 
+                \text{Top Left} &= \left( x_t - \frac{W_s}{2},\ y_t - \frac{H_s}{2} \right), \\
+                \text{Bottom Right} &= \left( x_t + \frac{W_s}{2},\ y_t + \frac{H_s}{2} \right), 
+            \end{align*}
+            \]
+            where \( x_t, y_t \) are the coordinates of the selected target point, and \( W_s, H_s \) are the width and height of the source image. This alignment ensures that the source object fits within the bounds of the target image.
+            The core of the blending process involves solving the Poisson equation, implemented in the `poisson_reconstruct` function. The goal is to reconstruct the selected region in the target image by ensuring gradient continuity between the source and the surrounding target area. For each pixel \( (x,y) \) inside the mask, I apply the discrete Laplacian operator:
+            \[
+            \Delta v(x, y) = 4v(x, y) - v(x+1, y) - v(x-1, y) - v(x, y+1) - v(x, y-1),
+            \]
+            and set up the equation:
+            \[
+            \Delta v(x, y) = \Delta s(x, y),
+            \]
+            where \( v(x, y) \) is the pixel value in the blended image, and \( s(x, y) \) is the pixel value in the source image. This ensures that the gradient (Laplacian) of the blended image matches that of the source image within the mask. For pixels on the boundary, I incorporate the target image's pixel values to maintain consistency:
+            \[
+            v(x, y) = t(x, y), \quad \text{for } (x, y) \notin \text{Mask},
+            \]
+            where \( t(x, y) \) is the pixel value in the target image. I construct a sparse linear system \( A \mathbf{v} = \mathbf{b} \), where:
+            <ul>
+                <li> \( A \) is a sparse matrix encoding the relationships defined by the Laplacian operator. </li>
+                <li> \( \mathbf{v} \) is the vector of unknown pixel values within the mask. </li>
+                <li> \( \mathbf{b} \) is a vector incorporating the source image gradients and boundary conditions. </li>
+            </ul>
+            Specifically, for each variable pixel \( v_i \):
+            <ul>
+                <li> \( A[i,i] = 4 \), </li>
+                <li> and for each neighbor \( v_j \) connected to \( v_i \): \( A[i,j] = -1 \). </li>
+            </ul>
+            The right-hand side vector \( \mathbf{b} \) is calculated based on the gradients from the source image and the known pixel values from the target image at the boundary. I solve this system using a sparse linear solver, minimizing the equation:
+            \[
+            \| A \cdot \mathbf{v} - \mathbf{b} \|^2.
+            \]
+            This yields the pixel values \( \mathbf{v} \) that seamlessly blend the source object into the target background.
+            In the `poisson_blend` function, I apply this blending process independently to each color channel (Red, Green, Blue) to preserve the color integrity of the image. For each channel \( c \), the blending ensures:
+            \[
+            v_c(x, y) = \begin{cases} 
+                t_c(x, y), & \text{if } (x, y) \notin \text{Mask}, \\
+                \text{Solution from Poisson Equation}, & \text{if } (x, y) \in \text{Mask},
+            \end{cases}
+            \]
+            where \( v_c(x, y) \) is the blended pixel value for channel \( c \), and \( t_c(x, y) \) is the target pixel value for channel \( c \).
+            Finally, in the main function, I bring all these steps together. The user selects the source region and its placement in the target image. The source is then aligned and blended into the target using the Poisson blending technique. 
+            This code provides a robust framework for Poisson image blending, combining interactive tools 
+        </p>
+        <!-- Images for Part 2.2 -->
+      <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/penguin-chick.jpg" alt="Image Insertion Point 2">
+            </div>
+        </div>
+      <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/snow.jpg" alt="Image Insertion Point 2">
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/42838126-8aac-4498-a290-ab0c2b560152.png" alt="Image Insertion Point 2">
+            </div>
+        </div>
+      <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/sheep.jpg" alt="Image Insertion Point 2">
+            </div>
+        </div>
+      <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/grass.jpg" alt="Image Insertion Point 2">
+            </div>
+        </div>
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/6ed793e9-2de0-4505-8554-ef15a44877ed.png" alt="Image Insertion Point 2">
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Bells and whistle——Color2Gray</h2>
+        <p>
+            This code provides an advanced implementation of color-to-grayscale conversion, improving upon the traditional grayscale methods by preserving perceptually important gradients and visual contrasts. The approach blends information from the RGB color space and the HSV (hue, saturation, value) color space to generate a grayscale image that better reflects the visual characteristics of the original colored image.
+            The process starts with the `get_hsv_gradients` function, which extracts the gradients of the saturation and value channels from the HSV color representation. The RGB image is first converted to HSV, where the saturation (S) and value (V) channels are processed to compute their gradients:
+            \[
+            \begin{aligned} 
+                S_{gx} &= \frac{\partial S}{\partial x}, \quad S_{gy} = \frac{\partial S}{\partial y}, \\ 
+                V_{gx} &= \frac{\partial V}{\partial x}, \quad V_{gy} = \frac{\partial V}{\partial y}. 
+            \end{aligned}
+            \]
+            The gradient magnitudes for these channels are calculated as:
+            \[
+            S_{\text{grad mag}} = \sqrt{S_{gx}^2 + S_{gy}^2}, \quad V_{\text{grad mag}} = \sqrt{V_{gx}^2 + V_{gy}^2}.
+            \]
+            A weighting parameter \( \alpha \) combines the saturation and value gradients into weighted gradients:
+            \[
+            \text{Weights} = \frac{\alpha \cdot S \cdot S_{\text{grad mag}}}{V_{\text{grad mag}} + \epsilon},
+            \]
+            where \( \epsilon \) prevents division by zero. These weighted gradients combine the saturation and value gradients into final gradients for use in grayscale reconstruction:
+            \[
+            G_x = \text{Weights} \cdot S_{gx} + V_{gx}, \quad G_y = \text{Weights} \cdot S_{gy} + V_{gy}.
+            \]
+            The `color2gray` function combines these gradients with a traditional grayscale version of the image to enforce consistency in intensity and gradient magnitudes. It formulates the problem as a linear system, balancing two objectives: gradient consistency and intensity matching.
+            To model gradient consistency, the gradients are incorporated into a sparse matrix \( A \), encoding the relationships between neighboring pixels. For each horizontal and vertical neighbor, the matrix \( A \) and vector \( \mathbf{b} \) are updated with gradient-weighted equations:
+            \[
+            A[i,j] = \begin{cases} 
+                -\text{Gradient Weight}, & \text{if } j \text{ is a neighbor of } i, \\
+                +\text{Gradient Weight}, & \text{if } j = i,
+            \end{cases} \quad \mathbf{b}[i] = \text{Gradient Weight} \cdot G_x \text{ or } G_y.
+            \]
+            For intensity matching, an additional set of equations ensures that the grayscale intensities align with the standard grayscale version, weighted by a parameter \( \lambda \):
+            \[
+            A[i, i] = \lambda \cdot \left( 1 + \text{Gray Gradient Magnitude} \right), \quad \mathbf{b}[i] = \lambda \cdot \text{Standard Gray}[i].
+            \]
+            The combined system is solved using a sparse linear solver, minimizing:
+            \[
+            \| A \cdot \mathbf{v} - \mathbf{b} \|^2,
+            \]
+            where \( \mathbf{v} \) is the vector of unknown grayscale intensities.
+            The resulting grayscale image is post-processed to adjust its dynamic range. A histogram matching function aligns the intensity levels of the enhanced grayscale image with the standard grayscale image to maintain visual consistency. For each intensity level:
+            \[
+            \text{Adjusted Intensity} = \text{Source Intensity} \cdot \frac{\text{Mean Target Intensity}}{\text{Mean Source Intensity} + \epsilon}.
+            \]
+            The `process_image` function brings these steps together. It loads an RGB image, computes both the standard and enhanced grayscale versions, and visualizes the results. The enhanced grayscale image retains critical visual details from the color image by leveraging gradients in the HSV space, ensuring that the perceptual importance of color information is preserved in the grayscale conversion.
+        </p>
+        <!-- Images for Bells and whistle——Color2Gray -->
+        <div class="image-container">
+            <div class="image-wrapper">
+                <img src="./picture/20c9e1d7-cd78-4a53-abfa-2798cb99741e.png" alt="Image Insertion Point 3">
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Guanyou Li. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
 
